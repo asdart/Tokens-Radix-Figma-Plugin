@@ -963,24 +963,82 @@
       });
     });
 
+    // Helper function to add hex alpha to color
+    function addHexAlpha(hex, alphaHex) {
+      const cleanHex = hex.replace('#', '');
+      return `#${cleanHex}${alphaHex}`;
+    }
+
     // Export JSON
     document.getElementById('exportJson').addEventListener('click', () => {
-      const baseColors = {};
+      // Generate both light and dark palettes for each color
+      const lightBackground = '#FFFFFF';
+      const darkBackground = '#111111';
+      
+      // Alpha values for each step (matching the provided format)
+      const alphaValues = ['0d', '14', '1c', '24', '2b', '33', '3d', '47', '52', '5c', '66', '70'];
+      
+      const colorsObj = {};
+      const colorsAObj = {};
+      const colorsDarkObj = {};
+      const colorsDarkAObj = {};
+      
       colors.forEach(color => {
-        baseColors[color.id] = getColorValue(color.id);
-      });
-
-      const scales = {};
-      colors.forEach(color => {
-        scales[`${color.id}Scale`] = colorPalettes[color.id] || [];
+        const colorValue = getColorValue(color.id);
+        const colorHex = colorValue.startsWith('#') ? colorValue : '#' + colorValue;
+        const isGray = color.id === 'gray';
+        
+        // Generate light mode palette
+        const lightPalette = generateRadixScale(colorHex, lightBackground, false, isGray);
+        
+        // Generate dark mode palette
+        const darkPalette = generateRadixScale(colorHex, darkBackground, true, isGray);
+        
+        // Convert color name to lowercase (e.g., "Primary" -> "primary", "Second Alt" -> "secondalt")
+        const colorKey = color.name.toLowerCase().replace(/\s+/g, '');
+        
+        // Build colors object (light mode)
+        colorsObj[colorKey] = {};
+        lightPalette.forEach((hex, index) => {
+          colorsObj[colorKey][(index + 1).toString()] = {
+            "$type": "color",
+            "$value": hex.toLowerCase()
+          };
+        });
+        
+        // Build colorsA object (light mode alpha)
+        colorsAObj[colorKey + 'A'] = {};
+        lightPalette.forEach((hex, index) => {
+          colorsAObj[colorKey + 'A'][(index + 1).toString()] = {
+            "$type": "color",
+            "$value": addHexAlpha(hex.toLowerCase(), alphaValues[index])
+          };
+        });
+        
+        // Build colorsDark object (dark mode)
+        colorsDarkObj[colorKey + 'Dark'] = {};
+        darkPalette.forEach((hex, index) => {
+          colorsDarkObj[colorKey + 'Dark'][(index + 1).toString()] = {
+            "$type": "color",
+            "$value": hex.toLowerCase()
+          };
+        });
+        
+        // Build colorsDarkA object (dark mode alpha)
+        colorsDarkAObj[colorKey + 'DarkA'] = {};
+        darkPalette.forEach((hex, index) => {
+          colorsDarkAObj[colorKey + 'DarkA'][(index + 1).toString()] = {
+            "$type": "color",
+            "$value": addHexAlpha(hex.toLowerCase(), alphaValues[index])
+          };
+        });
       });
 
       const colorData = {
-        appearance: currentTheme,
-        baseColors: baseColors,
-        background: backgroundColor,
-        scales: scales,
-        exportedAt: new Date().toISOString()
+        colors: colorsObj,
+        colorsA: colorsAObj,
+        colorsDark: colorsDarkObj,
+        colorsDarkA: colorsDarkAObj
       };
 
       // Send to plugin code to handle file export
