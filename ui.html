@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Token Radix - Radix Custom Color</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 16px;
+      padding-bottom: 80px;
+      background: var(--bg-color, #ffffff);
+      color: var(--text-color, #1a1a1a);
+      transition: background 0.2s, color 0.2s;
+      overflow-y: auto;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    body.dark {
+      --bg-color: #111111;
+      --text-color: #e5e5e5;
+      --border-color: #2a2a2a;
+      --input-bg: #1a1a1a;
+      --card-bg: #161616;
+    }
+
+    body.light {
+      --bg-color: #ffffff;
+      --text-color: #1a1a1a;
+      --border-color: #e5e5e5;
+      --input-bg: #fafafa;
+      --card-bg: #ffffff;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-color);
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .theme-toggle {
+      display: flex;
+      gap: 0;
+      background: #eef1f4;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      width: fit-content;
+      padding: 2px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    body.dark .theme-toggle {
+      background: #2a2a2a;
+    }
+
+    .theme-toggle button {
+      padding: 8px 16px;
+      border: none;
+      background: transparent;
+      color: #333333;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+    }
+
+    body.dark .theme-toggle button {
+      color: #ffffff;
+    }
+
+    .theme-toggle button.active {
+      background: #ffffff;
+      border: 1px solid #d0d0d0;
+      border-radius: 6px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark .theme-toggle button.active {
+      background: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #333333;
+    }
+
+    .theme-toggle button:not(.active) {
+      color: #333333;
+    }
+
+    body.dark .theme-toggle button:not(.active) {
+      color: #ffffff;
+    }
+
+    .theme-toggle-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle-icon * {
+      stroke: currentColor;
+      fill: currentColor;
+    }
+
+    .color-inputs {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .color-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .color-field-remove {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ff4444;
+      color: white;
+      border: 2px solid white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s;
+    }
+
+    .color-field-remove:hover {
+      background: #cc0000;
+      transform: scale(1.1);
+    }
+
+    .color-field.required .color-field-remove {
+      display: none;
+    }
+
+    .add-color-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-color);
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      min-height: 40px;
+      width: auto;
+    }
+
+    .add-color-btn:hover {
+      border-color: #18a0fb;
+      background: rgba(24, 160, 251, 0.05);
+    }
+
+    .color-field label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #666666;
+      margin-bottom: 6px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .color-name-input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666666;
+      padding: 4px 0;
+      margin-bottom: 6px;
+      outline: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+
+    .color-name-input:focus {
+      border-bottom-color: #18a0fb;
+    }
+
+    body.dark .color-name-input {
+      color: #cccccc;
+    }
+
+    body.dark .color-name-input:focus {
+      border-bottom-color: #18a0fb;
+    }
+
+    .add-color-container {
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .color-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #ffffff;
+      border: 1px solid #d0d0d0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    body.dark .color-input-wrapper {
+      background: var(--input-bg);
+      border-color: var(--border-color);
+    }
+
+    .color-input-wrapper:hover {
+      border-color: #999999;
+    }
+
+    .color-input-wrapper:focus-within {
+      border-color: #18a0fb;
+      outline: none;
+    }
+
+    .color-swatch-display {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      border: 1px solid #d0d0d0;
+      background: #ffffff;
+    }
+
+    body.dark .color-swatch-display {
+      border-color: var(--border-color);
+    }
+
+    input[type="color"] {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      left: 0;
+      top: 0;
+    }
+
+    input[type="text"].color-hex {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      color: #333333;
+      padding: 0;
+      cursor: pointer;
+      outline: none;
+    }
+
+    body.dark input[type="text"].color-hex {
+      color: var(--text-color);
+    }
+
+    input[type="text"].color-hex:focus {
+      cursor: text;
+    }
+
+    .palette-section {
+      margin-top: 24px;
+    }
+
+    .palette-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-color);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .color-scale {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
+
+    .color-swatch.selected {
+      outline: 2px solid #18a0fb;
+      outline-offset: 2px;
+    }
+
+    .color-swatch .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      margin-bottom: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .color-swatch:hover .tooltip {
+      opacity: 1;
+    }
+
+    .actions {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 8px;
+      padding: 16px;
+      background: var(--bg-color, #ffffff);
+      border-top: 1px solid var(--border-color, #e5e5e5);
+      z-index: 100;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark .actions {
+      background: var(--bg-color, #111111);
+      border-top-color: var(--border-color, #2a2a2a);
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex: 1;
+    }
+
+    .btn-primary {
+      background: #18a0fb;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0d8de6;
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--input-bg);
+    }
+
+    .resize-handle {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 20px;
+      height: 20px;
+      cursor: nwse-resize;
+      background: linear-gradient(135deg, transparent 0%, transparent 40%, #ccc 40%, #ccc 45%, transparent 45%, transparent 55%, #ccc 55%, #ccc 60%, transparent 60%, transparent 100%);
+      z-index: 1001;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .resize-handle:hover {
+      opacity: 1;
+    }
+
+    body.dark .resize-handle {
+      background: linear-gradient(135deg, transparent 0%, transparent 40%, #666 40%, #666 45%, transparent 45%, transparent 55%, #666 55%, #666 60%, transparent 60%, transparent 100%);
+    }
+  </style>
+</head>
+<body class="light">
+  <h1>Radix Custom Color</h1>
+  <div class="subtitle">Generate custom Radix UI color palettes</div>
+
+  <div class="theme-toggle">
+    <button id="lightBtn" class="active">
+      <svg class="theme-toggle-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+        <path d="M8 2V0M8 16V14M2 8H0M16 8H14M13.657 2.343L12.243 3.757M3.757 12.243L2.343 13.657M13.657 13.657L12.243 12.243M3.757 3.757L2.343 2.343" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      Light
+    </button>
+    <button id="darkBtn">
+      <svg class="theme-toggle-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="moonMask">
+          <rect width="16" height="16" fill="white"/>
+          <circle cx="10" cy="8" r="5" fill="black"/>
+        </mask>
+        <circle cx="8" cy="8" r="5" fill="currentColor" mask="url(#moonMask)"/>
+        <circle cx="3" cy="3.5" r="0.75" fill="currentColor"/>
+        <circle cx="13" cy="2.5" r="0.75" fill="currentColor"/>
+        <circle cx="14" cy="5.5" r="0.75" fill="currentColor"/>
+      </svg>
+      Dark
+    </button>
+  </div>
+
+  <div class="color-inputs" id="colorInputsContainer">
+    <!-- Colors will be dynamically added here -->
+  </div>
+
+  <div class="add-color-container">
+    <button class="add-color-btn" id="addColorBtn">+ Add Color</button>
+  </div>
+
+  <div class="palette-section" id="paletteSection">
+    <!-- Palettes will be dynamically added here -->
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" id="createSwatches">Create Swatches in Figma</button>
+    <button class="btn-secondary" id="exportJson">Export JSON</button>
+  </div>
+
+  <div class="resize-handle" id="resizeHandle"></div>
+
+  <script>
+    // Color utilities for generating Radix-style color scales
+    function hexToRgb(hex) {
+      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result ? {
+        r: parseInt(result[1], 16) / 255,
+        g: parseInt(result[2], 16) / 255,
+        b: parseInt(result[3], 16) / 255
+      } : null;
+    }
+
+    function rgbToHex(r, g, b) {
+      const toHex = (n) => {
+        const hex = Math.round(n * 255).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      };
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+    }
+
+    function rgbToHsl(r, g, b) {
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      let h, s, l = (max + min) / 2;
+
+      if (max === min) {
+        h = s = 0;
+      } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+
+      return { h: h * 360, s, l };
+    }
+
+    function hslToRgb(h, s, l) {
+      h /= 360;
+      let r, g, b;
+
+      if (s === 0) {
+        r = g = b = l;
+      } else {
+        const hue2rgb = (p, q, t) => {
+          if (t < 0) t += 1;
+          if (t > 1) t -= 1;
+          if (t < 1/6) return p + (q - p) * 6 * t;
+          if (t < 1/2) return q;
+          if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+          return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1/3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1/3);
+      }
+
+      return { r, g, b };
+    }
+
+    function mixColors(color1, color2, factor) {
+      const rgb1 = hexToRgb(color1);
+      const rgb2 = hexToRgb(color2);
+      
+      if (!rgb1 || !rgb2) return color1;
+      
+      const r = rgb1.r * (1 - factor) + rgb2.r * factor;
+      const g = rgb1.g * (1 - factor) + rgb2.g * factor;
+      const b = rgb1.b * (1 - factor) + rgb2.b * factor;
+      
+      return rgbToHex(r, g, b);
+    }
+
+    function generateRadixScale(baseColor, backgroundColor, isDark = false, isGray = false) {
+      const baseRgb = hexToRgb(baseColor);
+      const bgRgb = hexToRgb(backgroundColor);
+      
+      if (!baseRgb || !bgRgb) return Array(12).fill(baseColor);
+      
+      const baseHsl = rgbToHsl(baseRgb.r, baseRgb.g, baseRgb.b);
+      const bgHsl = rgbToHsl(bgRgb.r, bgRgb.g, bgRgb.b);
+      
+      // Radix color scale steps (normalized 0-1)
+      const lightnessSteps = isDark
+        ? [0.95, 0.90, 0.82, 0.72, 0.60, 0.48, 0.38, 0.30, 0.24, 0.20, 0.16, 0.12]
+        : [0.99, 0.97, 0.94, 0.90, 0.85, 0.75, 0.60, 0.48, 0.36, 0.24, 0.16, 0.10];
+      
+      const saturationBase = isGray ? Math.min(baseHsl.s, 0.05) : baseHsl.s;
+      
+      const scale = lightnessSteps.map((lightness, index) => {
+        let saturation = saturationBase;
+        
+        if (lightness > 0.9 || lightness < 0.15) {
+          saturation = saturation * 0.3;
+        } else if (lightness > 0.7 || lightness < 0.25) {
+          saturation = saturation * 0.6;
+        }
+        
+        let hue = baseHsl.h;
+        if (isGray && index > 2) {
+          const neutralHue = baseHsl.h > 180 ? baseHsl.h - 20 : baseHsl.h + 20;
+          hue = hue * 0.7 + neutralHue * 0.3;
+        }
+        
+        const rgb = hslToRgb(hue, saturation, lightness);
+        return rgbToHex(rgb.r, rgb.g, rgb.b);
+      });
+      
+      const bgLightness = bgHsl.l;
+      if (bgLightness > 0.5 && !isDark) {
+        for (let i = 9; i < 12; i++) {
+          const mixed = mixColors(scale[i], backgroundColor, 0.1);
+          scale[i] = mixed;
+        }
+      } else if (bgLightness < 0.5 && isDark) {
+        for (let i = 0; i < 3; i++) {
+          const mixed = mixColors(scale[i], backgroundColor, 0.1);
+          scale[i] = mixed;
+        }
+      }
+      
+      if (!isGray && scale[8]) {
+        const baseMix = mixColors(baseColor, scale[8], 0.7);
+        scale[8] = baseMix;
+      }
+      
+      return scale;
+    }
+
+    let currentTheme = 'light';
+    let colors = []; // Array to store color definitions
+    let colorPalettes = {}; // Object to store generated palettes
+
+    // Required colors that cannot be removed
+    const REQUIRED_COLORS = ['primary'];
+
+    // Background color (fixed, not user-editable)
+    let backgroundColor = '#FFFFFF';
+
+    // Initialize default colors
+    function initializeColors() {
+      colors = [
+        { id: 'primary', name: 'Primary', value: '#00FFCC', required: true }
+      ];
+      renderPalettes();
+      renderColorInputs();
+      generatePalettes();
+    }
+
+    // Render all color inputs
+    function renderColorInputs() {
+      const container = document.getElementById('colorInputsContainer');
+      container.innerHTML = '';
+
+      colors.forEach((color, index) => {
+        const colorField = document.createElement('div');
+        colorField.className = `color-field ${color.required ? 'required' : ''}`;
+        colorField.setAttribute('data-color-id', color.id);
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'color-name-input';
+        nameInput.value = color.name;
+        nameInput.placeholder = 'Color name';
+        nameInput.addEventListener('blur', (e) => {
+          const newName = e.target.value.trim();
+          if (newName && newName !== color.name) {
+            color.name = newName;
+            renderPalettes();
+            generatePalettes();
+          } else if (!newName) {
+            e.target.value = color.name; // Restore if empty
+          }
+        });
+        nameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.target.blur();
+          }
+        });
+        colorField.appendChild(nameInput);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'color-input-wrapper';
+
+        const colorPicker = document.createElement('input');
+        colorPicker.type = 'color';
+        colorPicker.id = `${color.id}Color`;
+        colorPicker.value = color.value;
+        wrapper.appendChild(colorPicker);
+
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch-display';
+        swatch.id = `${color.id}Swatch`;
+        swatch.style.background = color.value;
+        
+        // Add border for light colors
+        const rgb = hexToRgb(color.value);
+        if (rgb) {
+          const lightness = (rgb.r + rgb.g + rgb.b) / 3;
+          if (lightness > 0.9) {
+            swatch.style.border = '1px solid #d0d0d0';
+          }
+        }
+        
+        wrapper.appendChild(swatch);
+
+        const textInput = document.createElement('input');
+        textInput.type = 'text';
+        textInput.className = 'color-hex';
+        textInput.id = `${color.id}ColorText`;
+        textInput.value = color.value.replace('#', '').toUpperCase();
+        wrapper.appendChild(textInput);
+
+        colorField.appendChild(wrapper);
+
+        // Add remove button for non-required colors
+        if (!color.required) {
+          const removeBtn = document.createElement('button');
+          removeBtn.className = 'color-field-remove';
+          removeBtn.innerHTML = '×';
+          removeBtn.setAttribute('aria-label', 'Remove color');
+          removeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeColor(color.id);
+          });
+          colorField.appendChild(removeBtn);
+        }
+
+        container.appendChild(colorField);
+
+        // Setup input handlers
+        setupColorInput(`${color.id}Color`, `${color.id}ColorText`, `${color.id}Swatch`);
+      });
+    }
+
+    // Remove a color
+    function removeColor(colorId) {
+      colors = colors.filter(c => c.id !== colorId);
+      renderColorInputs();
+      renderPalettes();
+      generatePalettes();
+    }
+
+    // Add a new color
+    function addNewColor() {
+      const colorNames = ['Primary', 'Second', 'Second Alt', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth'];
+      const existingNames = colors.map(c => c.name.toLowerCase());
+      let newName = 'New Color';
+      let counter = 1;
+      
+      for (const name of colorNames) {
+        if (!existingNames.includes(name.toLowerCase())) {
+          newName = name;
+          break;
+        }
+      }
+      
+      if (newName === 'New Color') {
+        newName = `Color ${counter}`;
+        while (existingNames.includes(newName.toLowerCase())) {
+          counter++;
+          newName = `Color ${counter}`;
+        }
+      }
+
+      const newId = newName.toLowerCase().replace(/\s+/g, '');
+      const newColor = {
+        id: newId,
+        name: newName,
+        value: '#18A0FB',
+        required: false
+      };
+
+      colors.push(newColor);
+      renderColorInputs();
+      renderPalettes();
+      generatePalettes();
+    }
+
+    // Render all palettes
+    function renderPalettes() {
+      const container = document.getElementById('paletteSection');
+      container.innerHTML = '';
+
+      colors.forEach(color => {
+        const paletteTitle = document.createElement('div');
+        paletteTitle.className = 'palette-title';
+        paletteTitle.setAttribute('data-palette-color-id', color.id);
+        paletteTitle.textContent = `${color.name} Scale`;
+
+        const scaleContainer = document.createElement('div');
+        scaleContainer.id = `${color.id}Scale`;
+        scaleContainer.className = 'color-scale';
+
+        container.appendChild(paletteTitle);
+        container.appendChild(scaleContainer);
+      });
+    }
+
+    // Theme toggle
+    document.getElementById('lightBtn').addEventListener('click', () => {
+      currentTheme = 'light';
+      document.body.className = 'light';
+      document.getElementById('lightBtn').classList.add('active');
+      document.getElementById('darkBtn').classList.remove('active');
+      backgroundColor = '#FFFFFF';
+      generatePalettes();
+    });
+
+    document.getElementById('darkBtn').addEventListener('click', () => {
+      currentTheme = 'dark';
+      document.body.className = 'dark';
+      document.getElementById('darkBtn').classList.add('active');
+      document.getElementById('lightBtn').classList.remove('active');
+      backgroundColor = '#111111';
+      generatePalettes();
+    });
+
+    // Color input handlers
+    function setupColorInput(colorId, textId, swatchId) {
+      const colorPicker = document.getElementById(colorId);
+      const colorText = document.getElementById(textId);
+      const swatch = document.getElementById(swatchId);
+
+      if (!colorPicker || !colorText || !swatch) return;
+
+      // Extract color ID from element ID
+      const colorIdMatch = colorId.match(/^(.+)Color$/);
+      const colorIdShort = colorIdMatch ? colorIdMatch[1] : colorId;
+
+      function updateSwatchAndText(value) {
+        const hex = value.replace('#', '').toUpperCase();
+        swatch.style.background = '#' + hex;
+        colorText.value = hex;
+        
+        // Update color value in colors array
+        const color = colors.find(c => c.id === colorIdShort);
+        if (color) {
+          color.value = '#' + hex;
+        }
+        
+        // Add border for light colors to ensure visibility
+        const rgb = hexToRgb(value);
+        if (rgb) {
+          const lightness = (rgb.r + rgb.g + rgb.b) / 3;
+          if (lightness > 0.9) {
+            swatch.style.border = '1px solid #d0d0d0';
+          } else {
+            swatch.style.border = '1px solid transparent';
+          }
+        }
+      }
+
+      colorPicker.addEventListener('input', (e) => {
+        const value = e.target.value;
+        updateSwatchAndText(value);
+        colorPicker.value = value;
+        generatePalettes();
+      });
+
+      colorText.addEventListener('input', (e) => {
+        let value = e.target.value.replace('#', '').toUpperCase();
+        value = value.slice(0, 6);
+        colorText.value = value;
+        
+        if (/^[0-9A-Fa-f]{6}$/.test(value)) {
+          const fullHex = '#' + value;
+          colorPicker.value = fullHex;
+          updateSwatchAndText(fullHex);
+          generatePalettes();
+        } else if (value.length === 6) {
+          swatch.style.background = '#' + value;
+        }
+      });
+
+      colorText.addEventListener('blur', () => {
+        const value = colorText.value.replace('#', '').toUpperCase();
+        if (/^[0-9A-Fa-f]{6}$/.test(value)) {
+          const fullHex = '#' + value;
+          colorPicker.value = fullHex;
+          updateSwatchAndText(fullHex);
+          generatePalettes();
+        } else {
+          const pickerValue = colorPicker.value.replace('#', '').toUpperCase();
+          colorText.value = pickerValue;
+          generatePalettes();
+        }
+      });
+    }
+
+    // Generate Radix-style color palettes
+    function generatePalettes() {
+      // Use fixed background color based on theme
+      const backgroundHex = backgroundColor.startsWith('#') ? backgroundColor : '#' + backgroundColor;
+
+      // Generate palette for each color
+      colors.forEach(color => {
+        const colorValue = getColorValue(color.id);
+        const colorHex = colorValue.startsWith('#') ? colorValue : '#' + colorValue;
+        const isGray = color.id === 'gray';
+
+        const palette = generateRadixScale(colorHex, backgroundHex, currentTheme === 'dark', isGray);
+        colorPalettes[color.id] = palette;
+        renderScale(`${color.id}Scale`, palette, color.name);
+      });
+    }
+
+    // Get color value from input
+    function getColorValue(colorId) {
+      const colorPicker = document.getElementById(`${colorId}Color`);
+      const colorText = document.getElementById(`${colorId}ColorText`);
+
+      if (colorText && colorText.value && /^[0-9A-Fa-f]{6}$/.test(colorText.value)) {
+        return '#' + colorText.value.toUpperCase();
+      }
+      
+      if (colorPicker) {
+        return colorPicker.value;
+      }
+
+      // Fallback to stored value
+      const color = colors.find(c => c.id === colorId);
+      return color ? color.value : '#000000';
+    }
+
+    function renderScale(containerId, palette, name) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      palette.forEach((color, index) => {
+        const swatch = document.createElement('div');
+        swatch.className = 'color-swatch';
+        swatch.style.background = color;
+        swatch.setAttribute('data-color', color);
+        swatch.setAttribute('data-name', `${name} ${index}`);
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = `${name} ${index}\n${color}`;
+        swatch.appendChild(tooltip);
+
+        swatch.addEventListener('click', () => {
+          // Remove selection from all swatches
+          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+          // Add selection to clicked swatch
+          swatch.classList.add('selected');
+          
+          // Apply immediately on click
+          parent.postMessage({
+            pluginMessage: {
+              type: 'apply-color',
+              colorName: `${name} ${index}`,
+              colorValue: color
+            }
+          }, '*');
+        });
+
+        container.appendChild(swatch);
+      });
+    }
+
+    // Create swatches in Figma
+    document.getElementById('createSwatches').addEventListener('click', () => {
+      const palettes = colors.map(color => ({
+        palette: colorPalettes[color.id] || [],
+        name: color.name
+      }));
+
+      palettes.forEach((item, index) => {
+        setTimeout(() => {
+          parent.postMessage({
+            pluginMessage: {
+              type: 'create-rectangles',
+              palette: item.palette,
+              colorName: item.name
+            }
+          }, '*');
+        }, index * 100);
+      });
+    });
+
+    // Export JSON
+    document.getElementById('exportJson').addEventListener('click', () => {
+      const baseColors = {};
+      colors.forEach(color => {
+        baseColors[color.id] = getColorValue(color.id);
+      });
+
+      const scales = {};
+      colors.forEach(color => {
+        scales[`${color.id}Scale`] = colorPalettes[color.id] || [];
+      });
+
+      const colorData = {
+        appearance: currentTheme,
+        baseColors: baseColors,
+        background: backgroundColor,
+        scales: scales,
+        exportedAt: new Date().toISOString()
+      };
+
+      // Send to plugin code to handle file export
+      parent.postMessage({
+        pluginMessage: {
+          type: 'export-json',
+          data: colorData
+        }
+      }, '*');
+    });
+
+    // Listen for download JSON message from plugin
+    window.onmessage = (event) => {
+      const msg = event.data.pluginMessage;
+      
+      if (msg.type === 'selection-update') {
+        const selectionInfo = document.createElement('div');
+        selectionInfo.className = 'selected-info';
+        selectionInfo.textContent = `Selected: ${msg.selection.length} node(s)`;
+        
+        const existing = document.querySelector('.selected-info');
+        if (existing) existing.remove();
+        
+        document.body.insertBefore(selectionInfo, document.body.firstChild.nextSibling);
+      }
+      
+      if (msg.type === 'download-json') {
+        // Create blob and trigger download
+        const blob = new Blob([msg.json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = msg.filename || 'radix-colors.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    };
+
+    // Resize handle functionality
+    const resizeHandle = document.getElementById('resizeHandle');
+    let isResizing = false;
+    let startX = 0;
+    let startY = 0;
+    let startWidth = 0;
+    let startHeight = 0;
+
+    resizeHandle.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isResizing = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startWidth = window.innerWidth;
+      startHeight = window.innerHeight;
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    });
+
+    function handleMouseMove(e) {
+      if (!isResizing) return;
+
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+
+      const newWidth = startWidth + deltaX;
+      const newHeight = startHeight + deltaY;
+
+      parent.postMessage({
+        pluginMessage: {
+          type: 'resize',
+          width: newWidth,
+          height: newHeight
+        }
+      }, '*');
+    }
+
+    // Initialize on page load
+    document.getElementById('addColorBtn').addEventListener('click', addNewColor);
+    initializeColors();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "token-radix",
+  "version": "1.0.0",
+  "description": "A Figma plugin for managing design tokens",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "keywords": [
+    "figma",
+    "plugin",
+    "design-tokens"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.93.0",
+    "typescript": "^5.0.0"
+  }
+}
+
+
