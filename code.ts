@@ -2,7 +2,7 @@
 // It cannot access the DOM, but can communicate with the UI via postMessage
 
 figma.showUI(__html__, { 
-  width: 500, 
+  width: 508, 
   height: 800
 });
 
@@ -11,7 +11,7 @@ figma.ui.onmessage = async (msg) => {
   if (msg.type === 'resize') {
     const { width, height } = msg;
     // Enforce minimum and maximum sizes
-    const minWidth = 400;
+    const minWidth = 508;
     const minHeight = 600;
     const maxWidth = 1200;
     const maxHeight = 1600;

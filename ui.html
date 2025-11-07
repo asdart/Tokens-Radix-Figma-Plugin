@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <title>Token Radix - Radix Custom Color</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+    
     * {
       margin: 0;
       padding: 0;
@@ -12,261 +14,238 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      padding: 16px;
-      padding-bottom: 80px;
-      background: var(--bg-color, #ffffff);
-      color: var(--text-color, #1a1a1a);
-      transition: background 0.2s, color 0.2s;
-      overflow-y: auto;
+      background: #ffffff;
+      color: rgba(0, 0, 0, 0.8);
+      overflow: hidden;
       height: 100vh;
-      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
     body.dark {
-      --bg-color: #111111;
-      --text-color: #e5e5e5;
-      --border-color: #2a2a2a;
-      --input-bg: #1a1a1a;
-      --card-bg: #161616;
+      background: #111111;
+      color: rgba(255, 255, 255, 0.8);
     }
 
-    body.light {
-      --bg-color: #ffffff;
-      --text-color: #1a1a1a;
-      --border-color: #e5e5e5;
-      --input-bg: #fafafa;
-      --card-bg: #ffffff;
-    }
-
-    h1 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text-color);
-    }
-
-    .subtitle {
-      font-size: 12px;
-      color: #666;
-      margin-bottom: 20px;
-    }
-
-    .theme-toggle {
+    /* Main container */
+    .plugin-container {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      border-radius: 24px;
+      height: 100%;
       display: flex;
-      gap: 0;
-      background: #eef1f4;
-      border-radius: 8px;
+      flex-direction: column;
       overflow: hidden;
-      margin-bottom: 24px;
-      width: fit-content;
-      padding: 2px;
       position: relative;
-      transition: background 0.2s;
     }
 
-    body.dark .theme-toggle {
-      background: #2a2a2a;
+    body.dark .plugin-container {
+      background: #111111;
+      border-color: rgba(255, 255, 255, 0.05);
     }
 
-    .theme-toggle button {
-      padding: 8px 16px;
-      border: none;
-      background: transparent;
-      color: #333333;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      position: relative;
-      z-index: 1;
-    }
-
-    body.dark .theme-toggle button {
-      color: #ffffff;
-    }
-
-    .theme-toggle button.active {
-      background: #ffffff;
-      border: 1px solid #d0d0d0;
-      border-radius: 6px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-
-    body.dark .theme-toggle button.active {
-      background: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #333333;
-    }
-
-    .theme-toggle button:not(.active) {
-      color: #333333;
-    }
-
-    body.dark .theme-toggle button:not(.active) {
-      color: #ffffff;
-    }
-
-    .theme-toggle-icon {
-      width: 16px;
-      height: 16px;
-      display: inline-block;
-      flex-shrink: 0;
-    }
-
-    .theme-toggle-icon * {
-      stroke: currentColor;
-      fill: currentColor;
-    }
-
-    .color-inputs {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .color-field {
+    /* Header */
+    .header {
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.55);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+      padding: 12px 8px 8px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
       flex-direction: column;
       gap: 8px;
+      align-items: center;
+    }
+
+    body.dark .header {
+      background: rgba(17, 17, 17, 0.55);
+      border-bottom-color: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: flex;
+      gap: 0;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 2px;
       position: relative;
     }
 
-    .color-field-remove {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: #ff4444;
-      color: white;
-      border: 2px solid white;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      z-index: 10;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-      transition: all 0.2s;
+    body.dark .theme-toggle {
+      background: rgba(255, 255, 255, 0.05);
     }
 
-    .color-field-remove:hover {
-      background: #cc0000;
-      transform: scale(1.1);
-    }
-
-    .color-field.required .color-field-remove {
-      display: none;
-    }
-
-    .add-color-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border: 2px dashed var(--border-color);
-      border-radius: 8px;
-      background: transparent;
-      color: var(--text-color);
-      cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
-      min-height: 40px;
-      width: auto;
-    }
-
-    .add-color-btn:hover {
-      border-color: #18a0fb;
-      background: rgba(24, 160, 251, 0.05);
-    }
-
-    .color-field label {
-      font-size: 12px;
-      font-weight: 500;
-      color: #666666;
-      margin-bottom: 6px;
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .color-name-input {
-      width: 100%;
+    .theme-toggle button {
+      padding: 2px 8px;
       border: none;
       background: transparent;
-      font-size: 12px;
+      color: rgba(0, 0, 0, 0.55);
+      cursor: pointer;
+      font-size: 14px;
       font-weight: 500;
-      color: #666666;
-      padding: 4px 0;
-      margin-bottom: 6px;
-      outline: none;
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.2s;
-    }
-
-    .color-name-input:focus {
-      border-bottom-color: #18a0fb;
-    }
-
-    body.dark .color-name-input {
-      color: #cccccc;
-    }
-
-    body.dark .color-name-input:focus {
-      border-bottom-color: #18a0fb;
-    }
-
-    .add-color-container {
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: center;
-    }
-
-    .color-input-wrapper {
-      position: relative;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
       display: flex;
       align-items: center;
-      gap: 10px;
-      background: #ffffff;
-      border: 1px solid #d0d0d0;
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: border-color 0.2s;
+      gap: 8px;
+      position: relative;
+      border-radius: 10px;
     }
 
-    body.dark .color-input-wrapper {
-      background: var(--input-bg);
-      border-color: var(--border-color);
+    body.dark .theme-toggle button {
+      color: rgba(255, 255, 255, 0.55);
     }
 
-    .color-input-wrapper:hover {
-      border-color: #999999;
+    .theme-toggle button.active {
+      background: rgba(255, 255, 255, 0.8);
+      color: rgba(0, 0, 0, 0.8);
     }
 
-    .color-input-wrapper:focus-within {
-      border-color: #18a0fb;
-      outline: none;
+    body.dark .theme-toggle button.active {
+      background: rgba(255, 255, 255, 0.8);
+      color: rgba(0, 0, 0, 0.8);
     }
 
-    .color-swatch-display {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
+    .theme-toggle-icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      border: 1px solid #d0d0d0;
-      background: #ffffff;
     }
 
-    body.dark .color-swatch-display {
-      border-color: var(--border-color);
+    .theme-toggle-icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Icon colors adapt to button state */
+    .theme-toggle button.active .theme-toggle-icon svg {
+      opacity: 0.8;
+    }
+
+    .theme-toggle button:not(.active) .theme-toggle-icon svg {
+      opacity: 0.55;
+    }
+
+    /* Main content */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Title section */
+    .title-section {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .title-section h1 {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 32px;
+      color: rgba(0, 0, 0, 0.8);
+      width: 100%;
+    }
+
+    body.dark .title-section h1 {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .title-section .subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      color: rgba(0, 0, 0, 0.55);
+      width: 100%;
+    }
+
+    body.dark .title-section .subtitle {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    /* Color section */
+    .color-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    /* Color card */
+    .color-card {
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    body.dark .color-card {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* Color input row */
+    .color-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .color-input-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-fill {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .icon-fill svg {
+      width: 16px;
+      height: 18px;
+    }
+
+    body.dark .icon-fill svg {
+      filter: invert(1);
+      opacity: 0.55;
+    }
+
+    .color-swatch-input {
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+      position: relative;
+      cursor: pointer;
+    }
+
+    body.dark .color-swatch-input {
+      border-color: rgba(255, 255, 255, 0.1);
     }
 
     input[type="color"] {
@@ -279,136 +258,304 @@
       top: 0;
     }
 
-    input[type="text"].color-hex {
-      flex: 1;
-      border: none;
-      background: transparent;
-      font-size: 14px;
-      font-family: 'Monaco', 'Courier New', monospace;
-      color: #333333;
-      padding: 0;
-      cursor: pointer;
-      outline: none;
-    }
-
-    body.dark input[type="text"].color-hex {
-      color: var(--text-color);
-    }
-
-    input[type="text"].color-hex:focus {
-      cursor: text;
-    }
-
-    .palette-section {
-      margin-top: 24px;
-    }
-
-    .palette-title {
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: var(--text-color);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .color-scale {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
+    .text-input-group {
+      display: flex;
+      flex-direction: column;
       gap: 4px;
-      margin-bottom: 20px;
+      width: 145px;
     }
 
-    .color-swatch {
-      aspect-ratio: 1;
-      border-radius: 4px;
-      border: 1px solid var(--border-color);
+    .text-input-group.full-width {
+      flex: 1;
+      width: auto;
+    }
+
+    .text-input-label {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+      color: rgba(0, 0, 0, 0.55);
+    }
+
+    body.dark .text-input-label {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .text-input {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      padding: 4px 12px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      color: rgba(0, 0, 0, 0.55);
+      font-family: 'Inter', monospace;
+      outline: none;
+      width: 100%;
+    }
+
+    body.dark .text-input {
+      background: #1a1a1a;
+      border-color: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .text-input::placeholder {
+      color: rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark .text-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .text-input:focus {
+      border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark .text-input:focus {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .delete-button {
+      background: rgba(248, 86, 63, 0.2);
+      border: none;
+      border-radius: 12px;
+      padding: 4px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+
+    .delete-button:hover {
+      opacity: 1;
+    }
+
+    .delete-button svg {
+      width: 14px;
+      height: 16px;
+    }
+
+    .color-card.required .delete-button {
+      display: none;
+    }
+
+    /* Color scale row */
+    .color-scale-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .color-number-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-swatch-scale {
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
       cursor: pointer;
       position: relative;
       transition: transform 0.2s;
     }
 
-    .color-swatch:hover {
+    body.dark .color-swatch-scale {
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .color-swatch-scale:hover {
       transform: scale(1.1);
       z-index: 10;
     }
 
-    .color-swatch.selected {
-      outline: 2px solid #18a0fb;
-      outline-offset: 2px;
-    }
-
-    .color-swatch .tooltip {
+    .color-swatch-scale .tooltip {
       position: absolute;
-      bottom: 100%;
+      bottom: calc(100% + 8px);
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.9);
       color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 8px 12px;
+      border-radius: 8px;
       font-size: 11px;
       white-space: nowrap;
-      margin-bottom: 4px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+      text-align: left;
     }
 
-    .color-swatch:hover .tooltip {
+    .color-swatch-scale:hover .tooltip {
       opacity: 1;
     }
 
-    .actions {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
+    .tooltip-line {
       display: flex;
+      align-items: center;
       gap: 8px;
-      padding: 16px;
-      background: var(--bg-color, #ffffff);
-      border-top: 1px solid var(--border-color, #e5e5e5);
-      z-index: 100;
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    body.dark .actions {
-      background: var(--bg-color, #111111);
-      border-top-color: var(--border-color, #2a2a2a);
-      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+    .tooltip-label {
+      color: rgba(255, 255, 255, 0.7);
+      min-width: 60px;
     }
 
-    button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex: 1;
-    }
-
-    .btn-primary {
-      background: #18a0fb;
+    .tooltip-value {
+      font-family: 'Monaco', 'Courier New', monospace;
       color: white;
     }
 
-    .btn-primary:hover {
-      background: #0d8de6;
+    .color-number {
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+      color: rgba(0, 0, 0, 0.55);
     }
 
-    .btn-secondary {
-      background: var(--card-bg);
-      color: var(--text-color);
-      border: 1px solid var(--border-color);
+    body.dark .color-number {
+      color: rgba(255, 255, 255, 0.55);
     }
 
-    .btn-secondary:hover {
-      background: var(--input-bg);
+    /* Add color button */
+    .add-color-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 4px 8px;
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      color: rgba(0, 0, 0, 0.55);
+      transition: all 0.2s;
     }
 
+    body.dark .add-color-button {
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .add-color-button:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark .add-color-button:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .icon-plus {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-plus svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    /* Footer */
+    .footer {
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.55);
+      border-top: 1px solid rgba(0, 0, 0, 0.03);
+      padding: 12px;
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+      align-items: start;
+      justify-content: center;
+    }
+
+    body.dark .footer {
+      background: rgba(17, 17, 17, 0.55);
+      border-top-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .footer-button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .footer-button.secondary {
+      background: rgba(0, 0, 0, 0.05);
+      color: rgba(0, 0, 0, 0.55);
+    }
+
+    body.dark .footer-button.secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.55);
+    }
+
+    .footer-button.primary {
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+      box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.05);
+    }
+
+    body.dark .footer-button.primary {
+      background: rgba(255, 255, 255, 0.8);
+      color: rgba(0, 0, 0, 0.8);
+    }
+
+    .footer-button .icon {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.75;
+    }
+
+    .footer-button .icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .footer-button.primary .icon svg {
+      width: 14px;
+      height: 16px;
+    }
+
+    /* Resize handle */
     .resize-handle {
       position: fixed;
       bottom: 0;
@@ -432,47 +579,86 @@
   </style>
 </head>
 <body class="light">
-  <h1>Radix Custom Color</h1>
-  <div class="subtitle">Generate custom Radix UI color palettes</div>
+  <div class="plugin-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="theme-toggle">
+        <button id="lightBtn" class="active">
+          <div class="theme-toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 16C10.4142 16 10.75 16.3358 10.75 16.75V18.25C10.75 18.6642 10.4142 19 10 19C9.58579 19 9.25 18.6642 9.25 18.25V16.75C9.25 16.3358 9.58579 16 10 16Z" fill="currentColor"/>
+              <path d="M16.3652 15.3037C16.6577 15.5966 16.658 16.0725 16.3652 16.3652C16.0725 16.658 15.5966 16.6577 15.3037 16.3652L16.3652 15.3037Z" fill="currentColor"/>
+              <path d="M4.69629 14.2422C4.98914 13.9496 5.46499 13.9496 5.75781 14.2422C6.05028 14.5349 6.05011 15.0099 5.75781 15.3027L4.69629 16.3643C4.40346 16.6568 3.92857 16.6568 3.63574 16.3643C3.34304 16.0713 3.34291 15.5956 3.63574 15.3027L4.69629 14.2422Z" fill="currentColor"/>
+              <path d="M14.2432 14.2432C14.5178 13.9686 14.9525 13.9511 15.2471 14.1914L15.3037 14.2432L16.3652 15.3037L15.834 15.834L15.3037 16.3652L14.2432 15.3037L14.1914 15.2471C13.9511 14.9525 13.9686 14.5178 14.2432 14.2432Z" fill="currentColor"/>
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 5C12.7614 5 15 7.23858 15 10C15 12.7614 12.7614 15 10 15C7.23858 15 5 12.7614 5 10C5 7.23858 7.23858 5 10 5ZM10 6.5C8.067 6.5 6.5 8.067 6.5 10C6.5 11.933 8.067 13.5 10 13.5C11.933 13.5 13.5 11.933 13.5 10C13.5 8.067 11.933 6.5 10 6.5Z" fill="currentColor"/>
+              <path d="M3.25 9.25C3.66421 9.25 4 9.58579 4 10C4 10.4142 3.66421 10.75 3.25 10.75H1.75C1.33579 10.75 1 10.4142 1 10C1 9.58579 1.33579 9.25 1.75 9.25H3.25Z" fill="currentColor"/>
+              <path d="M18.25 9.25C18.6642 9.25 19 9.58579 19 10C19 10.4142 18.6642 10.75 18.25 10.75H16.75C16.3358 10.75 16 10.4142 16 10C16 9.58579 16.3358 9.25 16.75 9.25H18.25Z" fill="currentColor"/>
+              <path d="M5.75781 4.69629C6.05054 4.9892 6.05065 5.46497 5.75781 5.75781C5.46497 6.05065 4.9892 6.05054 4.69629 5.75781L5.75781 4.69629Z" fill="currentColor"/>
+              <path d="M15.3027 3.63574C15.5956 3.34291 16.0713 3.34304 16.3643 3.63574C16.6568 3.92857 16.6568 4.40346 16.3643 4.69629L15.3027 5.75781C15.0099 6.05011 14.5349 6.05028 14.2422 5.75781C13.9496 5.46499 13.9496 4.98914 14.2422 4.69629L15.3027 3.63574Z" fill="currentColor"/>
+              <path d="M3.63574 3.63574C3.91035 3.36114 4.34507 3.34368 4.63965 3.58398L4.69629 3.63574L5.75781 4.69629L5.22656 5.22656L4.69629 5.75781L3.63574 4.69629L3.58398 4.63965C3.34368 4.34507 3.36114 3.91035 3.63574 3.63574Z" fill="currentColor"/>
+              <path d="M10 1C10.4142 1 10.75 1.33579 10.75 1.75V3.25C10.75 3.66421 10.4142 4 10 4C9.58579 4 9.25 3.66421 9.25 3.25V1.75C9.25 1.33579 9.58579 1 10 1Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <span>Light</span>
+        </button>
+        <button id="darkBtn">
+          <div class="theme-toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M6.75 6.37212C6.75 5.55003 6.89324 4.76249 7.1543 4.0313C4.99085 5.08568 3.5 7.30395 3.5 9.87212C3.50004 13.4619 6.41024 16.3721 10 16.3721C12.406 16.3721 14.5022 15.0604 15.624 13.1133C15.0281 13.2804 14.4002 13.3721 13.75 13.3721C9.88381 13.3721 6.75004 10.2383 6.75 6.37212ZM8.25 6.37212C8.25004 9.40987 10.7122 11.8721 13.75 11.8721C14.8009 11.8721 15.7794 11.5728 16.6172 11.0586C16.8779 10.8989 17.2093 10.9137 17.4551 11.0958C17.701 11.2779 17.8114 11.5906 17.7344 11.8868C16.8399 15.3255 13.7235 17.8721 10 17.8721C5.58181 17.8721 2.00004 14.2903 2 9.87212C2 5.95665 4.81267 2.70566 8.52441 2.01274C8.82505 1.95664 9.1294 2.08894 9.29395 2.34673C9.45848 2.60453 9.44995 2.93653 9.27246 3.1856C8.62985 4.08751 8.25 5.18357 8.25 6.37212Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <span>Dark</span>
+        </button>
+      </div>
+    </div>
 
-  <div class="theme-toggle">
-    <button id="lightBtn" class="active">
-      <svg class="theme-toggle-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
-        <path d="M8 2V0M8 16V14M2 8H0M16 8H14M13.657 2.343L12.243 3.757M3.757 12.243L2.343 13.657M13.657 13.657L12.243 12.243M3.757 3.757L2.343 2.343" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
-      Light
-    </button>
-    <button id="darkBtn">
-      <svg class="theme-toggle-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <mask id="moonMask">
-          <rect width="16" height="16" fill="white"/>
-          <circle cx="10" cy="8" r="5" fill="black"/>
-        </mask>
-        <circle cx="8" cy="8" r="5" fill="currentColor" mask="url(#moonMask)"/>
-        <circle cx="3" cy="3.5" r="0.75" fill="currentColor"/>
-        <circle cx="13" cy="2.5" r="0.75" fill="currentColor"/>
-        <circle cx="14" cy="5.5" r="0.75" fill="currentColor"/>
-      </svg>
-      Dark
-    </button>
-  </div>
+    <!-- Main content -->
+    <div class="main-content">
+      <!-- Title section -->
+      <div class="title-section">
+        <h1>Infinity color generator</h1>
+        <div class="subtitle">Website builder color generator</div>
+      </div>
 
-  <div class="color-inputs" id="colorInputsContainer">
-    <!-- Colors will be dynamically added here -->
-  </div>
+      <!-- Color section -->
+      <div class="color-section" id="colorSection">
+        <!-- Colors will be dynamically added here -->
+      </div>
 
-  <div class="add-color-container">
-    <button class="add-color-btn" id="addColorBtn">+ Add Color</button>
-  </div>
+      <!-- Add color button -->
+      <button class="add-color-button" id="addColorBtn">
+        <div class="icon-plus">
+          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M5.75 12.25C5.75 12.664 6.086 13 6.5 13C6.914 13 7.25 12.664 7.25 12.25V7.25H12.25C12.664 7.25 13 6.914 13 6.5C13 6.086 12.664 5.75 12.25 5.75H7.25V0.75C7.25 0.336 6.914 0 6.5 0C6.086 0 5.75 0.336 5.75 0.75V5.75H0.75C0.336 5.75 0 6.086 0 6.5C0 6.914 0.336 7.25 0.75 7.25H5.75V12.25Z" fill="currentColor" fill-opacity="0.55"/>
+          </svg>
+        </div>
+        <span>Add color</span>
+      </button>
+    </div>
 
-  <div class="palette-section" id="paletteSection">
-    <!-- Palettes will be dynamically added here -->
-  </div>
-
-  <div class="actions">
-    <button class="btn-primary" id="createSwatches">Create Swatches in Figma</button>
-    <button class="btn-secondary" id="exportJson">Export JSON</button>
+    <!-- Footer -->
+    <div class="footer">
+      <button class="footer-button secondary" id="createSwatches">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 11.75C3.41421 11.75 3.75 11.4142 3.75 11C3.75 10.5858 3.41421 10.25 3 10.25C2.58579 10.25 2.25 10.5858 2.25 11C2.25 11.4142 2.58579 11.75 3 11.75Z" fill="black" fill-opacity="0.55"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M6 10.1213V1.75C6 0.783787 5.21621 0 4.25 0H1.75C0.783786 0 0 0.783787 0 1.75V11C0 12.6562 1.34379 14 3 14H12.25C13.2162 14 14 13.2162 14 12.25V9.75C14 8.78379 13.2162 8 12.25 8H11.967C11.5528 8 11.217 8.33579 11.217 8.75C11.217 9.16421 11.5528 9.5 11.967 9.5H12.25C12.3878 9.5 12.5 9.61221 12.5 9.75V12.25C12.5 12.3878 12.3878 12.5 12.25 12.5H5.74262L11.6623 6.58029C12.3457 5.89687 12.3465 4.7884 11.6617 4.10495L9.89433 2.33763C9.21096 1.65425 8.10288 1.65313 7.41942 2.33788L7.21967 2.53763C6.92678 2.83052 6.92678 3.30539 7.21967 3.59829C7.51257 3.89118 7.98744 3.89118 8.28033 3.59829L8.48101 3.39761C8.57759 3.30078 8.73519 3.2998 8.83367 3.39829L10.6024 5.16697C10.6992 5.26354 10.7002 5.42114 10.6017 5.51963L6 10.1213ZM4.5 11C4.5 11.8278 3.82779 12.5 3 12.5C2.17221 12.5 1.5 11.8278 1.5 11V1.75C1.5 1.61221 1.61221 1.5 1.75 1.5H4.25C4.38779 1.5 4.5 1.61221 4.5 1.75V11Z" fill="black" fill-opacity="0.55"/>
+          </svg>
+        </div>
+        <span>Generate swatches</span>
+      </button>
+      <button class="footer-button primary" id="exportJson">
+        <div class="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none">
+            <path d="M3 5.75C3 5.33579 3.33579 5 3.75 5H5.75C6.16421 5 6.5 5.33579 6.5 5.75C6.5 6.16421 6.16421 6.5 5.75 6.5H3.75C3.33579 6.5 3 6.16421 3 5.75Z" fill="currentColor"/>
+            <path d="M3 8.75C3 8.33579 3.33579 8 3.75 8H10.25C10.6642 8 11 8.33579 11 8.75C11 9.16421 10.6642 9.5 10.25 9.5H3.75C3.33579 9.5 3 9.16421 3 8.75Z" fill="currentColor"/>
+            <path d="M3.75 11C3.33579 11 3 11.3358 3 11.75C3 12.1642 3.33579 12.5 3.75 12.5H10.25C10.6642 12.5 11 12.1642 11 11.75C11 11.3358 10.6642 11 10.25 11H3.75Z" fill="currentColor"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M0 2.75C0 1.23079 1.23079 0 2.75 0H8.336C8.79834 0 9.24493 0.182934 9.57396 0.513301L9.57474 0.514086L13.4873 4.42667C13.816 4.75536 14 5.20014 14 5.664V13.25C14 14.7692 12.7692 16 11.25 16H2.75C1.23079 16 0 14.7692 0 13.25V2.75ZM2.75 1.5C2.05921 1.5 1.5 2.05921 1.5 2.75V13.25C1.5 13.9408 2.05921 14.5 2.75 14.5H11.25C11.9408 14.5 12.5 13.9408 12.5 13.25V6.00005H9.75C8.78379 6.00005 8 5.21626 8 4.25005V1.5H2.75ZM9.5 2.56066V4.25005C9.5 4.38784 9.61221 4.50005 9.75 4.50005H11.4394L9.5 2.56066Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>Export JSON</span>
+      </button>
+    </div>
   </div>
 
   <div class="resize-handle" id="resizeHandle"></div>
@@ -612,122 +798,165 @@
     }
 
     let currentTheme = 'light';
-    let colors = []; // Array to store color definitions
-    let colorPalettes = {}; // Object to store generated palettes
+    let colors = [];
+    let colorPalettes = {};
 
-    // Required colors that cannot be removed
-    const REQUIRED_COLORS = ['primary'];
-
-    // Background color (fixed, not user-editable)
     let backgroundColor = '#FFFFFF';
 
     // Initialize default colors
     function initializeColors() {
       colors = [
-        { id: 'primary', name: 'Primary', value: '#00FFCC', required: true }
+        { id: 'accent', name: 'Accent', value: '#00FFCC', required: true }
       ];
-      renderPalettes();
-      renderColorInputs();
+      renderColors();
       generatePalettes();
     }
 
-    // Render all color inputs
-    function renderColorInputs() {
-      const container = document.getElementById('colorInputsContainer');
+    // Render all color cards
+    function renderColors() {
+      const container = document.getElementById('colorSection');
       container.innerHTML = '';
 
-      colors.forEach((color, index) => {
-        const colorField = document.createElement('div');
-        colorField.className = `color-field ${color.required ? 'required' : ''}`;
-        colorField.setAttribute('data-color-id', color.id);
+      colors.forEach((color) => {
+        const colorCard = document.createElement('div');
+        colorCard.className = `color-card ${color.required ? 'required' : ''}`;
+        colorCard.setAttribute('data-color-id', color.id);
 
-        const nameInput = document.createElement('input');
-        nameInput.type = 'text';
-        nameInput.className = 'color-name-input';
-        nameInput.value = color.name;
-        nameInput.placeholder = 'Color name';
-        nameInput.addEventListener('blur', (e) => {
-          const newName = e.target.value.trim();
-          if (newName && newName !== color.name) {
-            color.name = newName;
-            renderPalettes();
-            generatePalettes();
-          } else if (!newName) {
-            e.target.value = color.name; // Restore if empty
-          }
-        });
-        nameInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.target.blur();
-          }
-        });
-        colorField.appendChild(nameInput);
+        // Color input row
+        const inputRow = document.createElement('div');
+        inputRow.className = 'color-input-row';
 
-        const wrapper = document.createElement('div');
-        wrapper.className = 'color-input-wrapper';
+        // Icon + Swatch
+        const inputGroup = document.createElement('div');
+        inputGroup.className = 'color-input-group';
+
+        const iconFill = document.createElement('div');
+        iconFill.className = 'icon-fill';
+        iconFill.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="18" viewBox="0 0 16 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.59678 0.267381C6.33023 -0.0496722 5.85712 -0.0906106 5.54007 0.175942C5.22301 0.442495 5.18208 0.9156 5.44863 1.23265L6.32015 2.26929L1.01008 6.6093C-0.166965 7.57069 -0.339912 9.30331 0.621048 10.4787L3.58821 14.0739L3.5893 14.0752C4.56035 15.2607 6.31276 15.4234 7.4862 14.4382L13.3722 9.49221C13.5245 9.36423 13.6197 9.18097 13.6369 8.98277C13.6541 8.78456 13.5918 8.58766 13.4638 8.43538L6.59678 0.267381ZM1.95933 7.77073L7.28551 3.41755L11.1389 8.00098H1.74067C1.80209 7.91709 1.87505 7.83955 1.95933 7.77073ZM1.75985 9.50098C1.76689 9.5101 1.77407 9.51915 1.78139 9.52813L1.78235 9.52931L4.74921 13.1241C5.19039 13.6634 5.98733 13.7381 6.52145 13.2896L11.0301 9.50098H1.75985Z" fill="currentColor" fill-opacity="0.55"/><path fill-rule="evenodd" clip-rule="evenodd" d="M13.3747 11.001C13.603 11.001 13.8189 11.105 13.9612 11.2836C14.144 11.513 14.3424 11.723 14.5593 11.9516L14.5768 11.9701C14.7815 12.1857 15.008 12.4244 15.2104 12.6813C15.6464 13.2348 15.9997 13.9095 15.9997 14.848C15.9997 16.3025 14.8355 17.501 13.3747 17.501C11.9139 17.501 10.7497 16.3025 10.7497 14.848C10.7497 13.9095 11.103 13.2348 11.539 12.6813C11.7414 12.4244 11.9678 12.1858 12.1725 11.9701L12.1901 11.9516C12.407 11.723 12.6054 11.513 12.7882 11.2836C12.9305 11.105 13.1464 11.001 13.3747 11.001ZM12.7174 13.6094C12.4219 13.9846 12.2497 14.3415 12.2497 14.848C12.2497 15.4954 12.7635 16.001 13.3747 16.001C13.9859 16.001 14.4997 15.4954 14.4997 14.848C14.4997 14.3415 14.3275 13.9846 14.032 13.6094C13.8744 13.4093 13.6908 13.2155 13.4713 12.9842L13.3747 12.8823L13.2781 12.9842C13.0585 13.2155 12.875 13.4093 12.7174 13.6094Z" fill="currentColor" fill-opacity="0.55"/></svg>';
+        inputGroup.appendChild(iconFill);
+
+        const swatchWrapper = document.createElement('div');
+        swatchWrapper.className = 'color-swatch-input';
+        swatchWrapper.id = `${color.id}Swatch`;
+        swatchWrapper.style.background = color.value;
 
         const colorPicker = document.createElement('input');
         colorPicker.type = 'color';
         colorPicker.id = `${color.id}Color`;
         colorPicker.value = color.value;
-        wrapper.appendChild(colorPicker);
+        swatchWrapper.appendChild(colorPicker);
 
-        const swatch = document.createElement('div');
-        swatch.className = 'color-swatch-display';
-        swatch.id = `${color.id}Swatch`;
-        swatch.style.background = color.value;
-        
-        // Add border for light colors
         const rgb = hexToRgb(color.value);
         if (rgb) {
           const lightness = (rgb.r + rgb.g + rgb.b) / 3;
           if (lightness > 0.9) {
-            swatch.style.border = '1px solid #d0d0d0';
+            swatchWrapper.style.border = '1px solid rgba(0, 0, 0, 0.1)';
           }
         }
-        
-        wrapper.appendChild(swatch);
 
-        const textInput = document.createElement('input');
-        textInput.type = 'text';
-        textInput.className = 'color-hex';
-        textInput.id = `${color.id}ColorText`;
-        textInput.value = color.value.replace('#', '').toUpperCase();
-        wrapper.appendChild(textInput);
+        inputGroup.appendChild(swatchWrapper);
+        inputRow.appendChild(inputGroup);
 
-        colorField.appendChild(wrapper);
+        // Hex input
+        const hexInputGroup = document.createElement('div');
+        hexInputGroup.className = 'text-input-group';
+        const hexLabel = document.createElement('div');
+        hexLabel.className = 'text-input-label';
+        // First color shows "Accent", others show their name
+        const colorIndex = colors.findIndex(c => c.id === color.id);
+        if (colorIndex === 0) {
+          hexLabel.textContent = 'Accent';
+        } else {
+          hexLabel.textContent = color.name;
+        }
+        hexInputGroup.appendChild(hexLabel);
+        const hexInput = document.createElement('input');
+        hexInput.type = 'text';
+        hexInput.className = 'text-input';
+        hexInput.id = `${color.id}ColorText`;
+        hexInput.value = color.value.replace('#', '').toUpperCase();
+        hexInput.placeholder = 'Hex code';
+        hexInputGroup.appendChild(hexInput);
+        inputRow.appendChild(hexInputGroup);
 
-        // Add remove button for non-required colors
+        // Name input
+        const nameInputGroup = document.createElement('div');
+        nameInputGroup.className = 'text-input-group full-width';
+        const nameLabel = document.createElement('div');
+        nameLabel.className = 'text-input-label';
+        nameLabel.textContent = 'Color name';
+        nameInputGroup.appendChild(nameLabel);
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.className = 'text-input';
+        nameInput.id = `${color.id}NameInput`;
+        nameInput.value = color.name;
+        nameInput.placeholder = 'Ex: Navy blue';
+        nameInputGroup.appendChild(nameInput);
+        inputRow.appendChild(nameInputGroup);
+
+        // Delete button
         if (!color.required) {
-          const removeBtn = document.createElement('button');
-          removeBtn.className = 'color-field-remove';
-          removeBtn.innerHTML = '×';
-          removeBtn.setAttribute('aria-label', 'Remove color');
-          removeBtn.addEventListener('click', (e) => {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-button';
+          deleteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" viewBox="0 0 14 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 3H0.75C0.335786 3 0 3.33579 0 3.75C0 4.16421 0.335786 4.5 0.75 4.5H13.25C13.6642 4.5 14 4.16421 14 3.75C14 3.33579 13.6642 3 13.25 3H10V1.75C10 0.783786 9.21621 0 8.25 0H5.75C4.78379 0 4 0.783786 4 1.75V3ZM5.5 1.75C5.5 1.61221 5.61221 1.5 5.75 1.5H8.25C8.38779 1.5 8.5 1.61221 8.5 1.75V3H5.5V1.75Z" fill="#DA2810"/><path d="M2.48757 5.50106C2.90121 5.47928 3.25419 5.79695 3.27596 6.21059L3.64996 13.3155C3.68501 13.9796 4.23328 14.5 4.898 14.5H9.103C9.76698 14.5 10.316 13.9794 10.351 13.3155L10.725 6.21059C10.7468 5.79695 11.0998 5.47928 11.5134 5.50106C11.9271 5.52283 12.2447 5.8758 12.223 6.28944L11.849 13.3944C11.772 14.8546 10.565 16 9.103 16H4.898C3.43474 16 2.22902 14.8544 2.15204 13.3945L1.77803 6.28944C1.75626 5.8758 2.07393 5.52283 2.48757 5.50106Z" fill="#DA2810"/></svg>';
+          deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             removeColor(color.id);
           });
-          colorField.appendChild(removeBtn);
+          inputRow.appendChild(deleteBtn);
         }
 
-        container.appendChild(colorField);
+        colorCard.appendChild(inputRow);
+
+        // Color scale row
+        const scaleRow = document.createElement('div');
+        scaleRow.className = 'color-scale-row';
+        scaleRow.id = `${color.id}Scale`;
+        colorCard.appendChild(scaleRow);
+
+        container.appendChild(colorCard);
 
         // Setup input handlers
         setupColorInput(`${color.id}Color`, `${color.id}ColorText`, `${color.id}Swatch`);
+        setupNameInput(`${color.id}NameInput`, color.id);
+      });
+    }
+
+    // Setup name input
+    function setupNameInput(inputId, colorId) {
+      const nameInput = document.getElementById(inputId);
+      if (!nameInput) return;
+
+      nameInput.addEventListener('blur', (e) => {
+        const newName = e.target.value.trim();
+        const color = colors.find(c => c.id === colorId);
+        if (color && newName && newName !== color.name) {
+          color.name = newName;
+          renderColors();
+          generatePalettes();
+        } else if (color && !newName) {
+          e.target.value = color.name;
+        }
+      });
+
+      nameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.target.blur();
+        }
       });
     }
 
     // Remove a color
     function removeColor(colorId) {
       colors = colors.filter(c => c.id !== colorId);
-      renderColorInputs();
-      renderPalettes();
+      renderColors();
       generatePalettes();
     }
 
     // Add a new color
     function addNewColor() {
-      const colorNames = ['Primary', 'Second', 'Second Alt', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth'];
+      const colorNames = ['Accent', 'Primary', 'Secondary', 'Secondary Alt', 'Graphic-1', 'Graphic-2', 'Graphic-3', 'Graphic-4', 'Graphic-5', 'Graphic-6', 'Graphic-7'];
       const existingNames = colors.map(c => c.name.toLowerCase());
       let newName = 'New Color';
       let counter = 1;
@@ -740,14 +969,14 @@
       }
       
       if (newName === 'New Color') {
-        newName = `Color ${counter}`;
+        newName = `Graphic-${counter}`;
         while (existingNames.includes(newName.toLowerCase())) {
           counter++;
-          newName = `Color ${counter}`;
+          newName = `Graphic-${counter}`;
         }
       }
 
-      const newId = newName.toLowerCase().replace(/\s+/g, '');
+      const newId = newName.toLowerCase().replace(/\s+/g, '').replace(/-/g, '');
       const newColor = {
         id: newId,
         name: newName,
@@ -756,49 +985,9 @@
       };
 
       colors.push(newColor);
-      renderColorInputs();
-      renderPalettes();
+      renderColors();
       generatePalettes();
     }
-
-    // Render all palettes
-    function renderPalettes() {
-      const container = document.getElementById('paletteSection');
-      container.innerHTML = '';
-
-      colors.forEach(color => {
-        const paletteTitle = document.createElement('div');
-        paletteTitle.className = 'palette-title';
-        paletteTitle.setAttribute('data-palette-color-id', color.id);
-        paletteTitle.textContent = `${color.name} Scale`;
-
-        const scaleContainer = document.createElement('div');
-        scaleContainer.id = `${color.id}Scale`;
-        scaleContainer.className = 'color-scale';
-
-        container.appendChild(paletteTitle);
-        container.appendChild(scaleContainer);
-      });
-    }
-
-    // Theme toggle
-    document.getElementById('lightBtn').addEventListener('click', () => {
-      currentTheme = 'light';
-      document.body.className = 'light';
-      document.getElementById('lightBtn').classList.add('active');
-      document.getElementById('darkBtn').classList.remove('active');
-      backgroundColor = '#FFFFFF';
-      generatePalettes();
-    });
-
-    document.getElementById('darkBtn').addEventListener('click', () => {
-      currentTheme = 'dark';
-      document.body.className = 'dark';
-      document.getElementById('darkBtn').classList.add('active');
-      document.getElementById('lightBtn').classList.remove('active');
-      backgroundColor = '#111111';
-      generatePalettes();
-    });
 
     // Color input handlers
     function setupColorInput(colorId, textId, swatchId) {
@@ -808,7 +997,6 @@
 
       if (!colorPicker || !colorText || !swatch) return;
 
-      // Extract color ID from element ID
       const colorIdMatch = colorId.match(/^(.+)Color$/);
       const colorIdShort = colorIdMatch ? colorIdMatch[1] : colorId;
 
@@ -817,18 +1005,16 @@
         swatch.style.background = '#' + hex;
         colorText.value = hex;
         
-        // Update color value in colors array
         const color = colors.find(c => c.id === colorIdShort);
         if (color) {
           color.value = '#' + hex;
         }
         
-        // Add border for light colors to ensure visibility
         const rgb = hexToRgb(value);
         if (rgb) {
           const lightness = (rgb.r + rgb.g + rgb.b) / 3;
           if (lightness > 0.9) {
-            swatch.style.border = '1px solid #d0d0d0';
+            swatch.style.border = '1px solid rgba(0, 0, 0, 0.1)';
           } else {
             swatch.style.border = '1px solid transparent';
           }
@@ -874,10 +1060,8 @@
 
     // Generate Radix-style color palettes
     function generatePalettes() {
-      // Use fixed background color based on theme
       const backgroundHex = backgroundColor.startsWith('#') ? backgroundColor : '#' + backgroundColor;
 
-      // Generate palette for each color
       colors.forEach(color => {
         const colorValue = getColorValue(color.id);
         const colorHex = colorValue.startsWith('#') ? colorValue : '#' + colorValue;
@@ -885,7 +1069,7 @@
 
         const palette = generateRadixScale(colorHex, backgroundHex, currentTheme === 'dark', isGray);
         colorPalettes[color.id] = palette;
-        renderScale(`${color.id}Scale`, palette, color.name);
+        renderScale(`${color.id}Scale`, palette, color);
       });
     }
 
@@ -902,46 +1086,104 @@
         return colorPicker.value;
       }
 
-      // Fallback to stored value
       const color = colors.find(c => c.id === colorId);
       return color ? color.value : '#000000';
     }
 
-    function renderScale(containerId, palette, name) {
+    function renderScale(containerId, palette, colorObj) {
       const container = document.getElementById(containerId);
+      if (!container) return;
       container.innerHTML = '';
 
+      // Alpha values for each step (matching the export format)
+      const alphaValues = ['0d', '14', '1c', '24', '2b', '33', '3d', '47', '52', '5c', '66', '70'];
+      
+      // Generate color key for primitive token
+      const colorKey = colorObj.name.toLowerCase().replace(/\s+/g, '');
+      const isDark = currentTheme === 'dark';
+      const tokenPrefix = isDark ? `colors.${colorKey}Dark` : `colors.${colorKey}`;
+      const tokenPrefixAlpha = isDark ? `colors.${colorKey}DarkA` : `colors.${colorKey}A`;
+
       palette.forEach((color, index) => {
+        const item = document.createElement('div');
+        item.className = 'color-number-item';
+
         const swatch = document.createElement('div');
-        swatch.className = 'color-swatch';
+        swatch.className = 'color-swatch-scale';
         swatch.style.background = color;
         swatch.setAttribute('data-color', color);
-        swatch.setAttribute('data-name', `${name} ${index}`);
-        
+        swatch.setAttribute('data-name', `${colorObj.name} ${index + 1}`);
+
+        // Create tooltip
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
-        tooltip.textContent = `${name} ${index}\n${color}`;
+        
+        // Solid color hex
+        const solidHex = color.toLowerCase();
+        const solidLine = document.createElement('div');
+        solidLine.className = 'tooltip-line';
+        solidLine.innerHTML = '<span class="tooltip-label">Solid:</span><span class="tooltip-value">' + solidHex + '</span>';
+        tooltip.appendChild(solidLine);
+        
+        // Alpha color hex
+        const alphaHex = addHexAlpha(solidHex, alphaValues[index]);
+        const alphaLine = document.createElement('div');
+        alphaLine.className = 'tooltip-line';
+        alphaLine.innerHTML = '<span class="tooltip-label">Alpha:</span><span class="tooltip-value">' + alphaHex + '</span>';
+        tooltip.appendChild(alphaLine);
+        
+        // Primitive token
+        const tokenLine = document.createElement('div');
+        tokenLine.className = 'tooltip-line';
+        tokenLine.innerHTML = '<span class="tooltip-label">Token:</span><span class="tooltip-value">' + tokenPrefix + '.' + (index + 1) + '</span>';
+        tooltip.appendChild(tokenLine);
+        
+        // Alpha token
+        const tokenAlphaLine = document.createElement('div');
+        tokenAlphaLine.className = 'tooltip-line';
+        tokenAlphaLine.innerHTML = '<span class="tooltip-label">Token A:</span><span class="tooltip-value">' + tokenPrefixAlpha + '.' + (index + 1) + '</span>';
+        tooltip.appendChild(tokenAlphaLine);
+        
         swatch.appendChild(tooltip);
 
         swatch.addEventListener('click', () => {
-          // Remove selection from all swatches
-          document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
-          // Add selection to clicked swatch
-          swatch.classList.add('selected');
-          
-          // Apply immediately on click
           parent.postMessage({
             pluginMessage: {
               type: 'apply-color',
-              colorName: `${name} ${index}`,
+              colorName: `${colorObj.name} ${index + 1}`,
               colorValue: color
             }
           }, '*');
         });
 
-        container.appendChild(swatch);
+        const number = document.createElement('div');
+        number.className = 'color-number';
+        number.textContent = (index + 1).toString();
+
+        item.appendChild(swatch);
+        item.appendChild(number);
+        container.appendChild(item);
       });
     }
+
+    // Theme toggle
+    document.getElementById('lightBtn').addEventListener('click', () => {
+      currentTheme = 'light';
+      document.body.className = 'light';
+      document.getElementById('lightBtn').classList.add('active');
+      document.getElementById('darkBtn').classList.remove('active');
+      backgroundColor = '#FFFFFF';
+      generatePalettes();
+    });
+
+    document.getElementById('darkBtn').addEventListener('click', () => {
+      currentTheme = 'dark';
+      document.body.className = 'dark';
+      document.getElementById('darkBtn').classList.add('active');
+      document.getElementById('lightBtn').classList.remove('active');
+      backgroundColor = '#111111';
+      generatePalettes();
+    });
 
     // Create swatches in Figma
     document.getElementById('createSwatches').addEventListener('click', () => {
@@ -971,11 +1213,8 @@
 
     // Export JSON
     document.getElementById('exportJson').addEventListener('click', () => {
-      // Generate both light and dark palettes for each color
       const lightBackground = '#FFFFFF';
       const darkBackground = '#111111';
-      
-      // Alpha values for each step (matching the provided format)
       const alphaValues = ['0d', '14', '1c', '24', '2b', '33', '3d', '47', '52', '5c', '66', '70'];
       
       const colorsObj = {};
@@ -988,16 +1227,11 @@
         const colorHex = colorValue.startsWith('#') ? colorValue : '#' + colorValue;
         const isGray = color.id === 'gray';
         
-        // Generate light mode palette
         const lightPalette = generateRadixScale(colorHex, lightBackground, false, isGray);
-        
-        // Generate dark mode palette
         const darkPalette = generateRadixScale(colorHex, darkBackground, true, isGray);
         
-        // Convert color name to lowercase (e.g., "Primary" -> "primary", "Second Alt" -> "secondalt")
         const colorKey = color.name.toLowerCase().replace(/\s+/g, '');
         
-        // Build colors object (light mode)
         colorsObj[colorKey] = {};
         lightPalette.forEach((hex, index) => {
           colorsObj[colorKey][(index + 1).toString()] = {
@@ -1006,7 +1240,6 @@
           };
         });
         
-        // Build colorsA object (light mode alpha)
         colorsAObj[colorKey + 'A'] = {};
         lightPalette.forEach((hex, index) => {
           colorsAObj[colorKey + 'A'][(index + 1).toString()] = {
@@ -1015,7 +1248,6 @@
           };
         });
         
-        // Build colorsDark object (dark mode)
         colorsDarkObj[colorKey + 'Dark'] = {};
         darkPalette.forEach((hex, index) => {
           colorsDarkObj[colorKey + 'Dark'][(index + 1).toString()] = {
@@ -1024,7 +1256,6 @@
           };
         });
         
-        // Build colorsDarkA object (dark mode alpha)
         colorsDarkAObj[colorKey + 'DarkA'] = {};
         darkPalette.forEach((hex, index) => {
           colorsDarkAObj[colorKey + 'DarkA'][(index + 1).toString()] = {
@@ -1041,7 +1272,6 @@
         colorsDarkA: colorsDarkAObj
       };
 
-      // Send to plugin code to handle file export
       parent.postMessage({
         pluginMessage: {
           type: 'export-json',
@@ -1054,19 +1284,7 @@
     window.onmessage = (event) => {
       const msg = event.data.pluginMessage;
       
-      if (msg.type === 'selection-update') {
-        const selectionInfo = document.createElement('div');
-        selectionInfo.className = 'selected-info';
-        selectionInfo.textContent = `Selected: ${msg.selection.length} node(s)`;
-        
-        const existing = document.querySelector('.selected-info');
-        if (existing) existing.remove();
-        
-        document.body.insertBefore(selectionInfo, document.body.firstChild.nextSibling);
-      }
-      
       if (msg.type === 'download-json') {
-        // Create blob and trigger download
         const blob = new Blob([msg.json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1115,6 +1333,12 @@
           height: newHeight
         }
       }, '*');
+    }
+
+    function handleMouseUp() {
+      isResizing = false;
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
     }
 
     // Initialize on page load
